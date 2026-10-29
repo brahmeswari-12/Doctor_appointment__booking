@@ -1,18 +1,22 @@
 import { useState } from 'react';
+import api from '../../services/api.js';
 import Alert from '../../components/Alert.jsx';
 
 const INITIAL_FORM = { name: '', email: '', subject: '', message: '' };
 
-// Contact page with a client-side validated form (no backend submission).
+// Dynamic Contact page connected directly to MySQL backend.
 export default function Contact() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: '' }));
+    setServerError('');
   };
 
   const validate = () => {
@@ -25,12 +29,21 @@ export default function Contact() {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    // Demo only: simulate a successful submission.
-    setSubmitted(true);
-    setForm(INITIAL_FORM);
+
+    setSubmitting(true);
+    setServerError('');
+    try {
+      await api.post('/public/contact', form);
+      setSubmitted(true);
+      setForm(INITIAL_FORM);
+    } catch (err) {
+      setServerError(err.message || 'Failed to send message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -47,10 +60,12 @@ export default function Contact() {
           {submitted && (
             <Alert
               type="success"
-              message="Thank you! Your message has been received. We will get back to you shortly."
+              message="Thank you! Your message has been saved to the database. We will get back to you shortly."
               onClose={() => setSubmitted(false)}
             />
           )}
+
+          {serverError && <Alert type="error" message={serverError} />}
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="form-row form-row-2">
@@ -65,6 +80,7 @@ export default function Contact() {
                   value={form.name}
                   onChange={handleChange}
                   placeholder="Jane Doe"
+                  disabled={submitting}
                 />
                 {errors.name && <span className="form-error">{errors.name}</span>}
               </div>
@@ -81,6 +97,7 @@ export default function Contact() {
                   value={form.email}
                   onChange={handleChange}
                   placeholder="jane@example.com"
+                  disabled={submitting}
                 />
                 {errors.email && <span className="form-error">{errors.email}</span>}
               </div>
@@ -95,6 +112,7 @@ export default function Contact() {
                 value={form.subject}
                 onChange={handleChange}
                 placeholder="How can we help?"
+                disabled={submitting}
               />
             </div>
 
@@ -109,11 +127,15 @@ export default function Contact() {
                 value={form.message}
                 onChange={handleChange}
                 placeholder="Write your message here..."
+                rows="4"
+                disabled={submitting}
               />
               {errors.message && <span className="form-error">{errors.message}</span>}
             </div>
 
-            <button type="submit" className="btn btn-primary btn-lg">Send Message</button>
+            <button type="submit" className="btn btn-primary btn-lg" disabled={submitting}>
+              {submitting ? 'Sending...' : 'Send Message'}
+            </button>
           </form>
         </div>
 
