@@ -11,12 +11,6 @@ const ROLE_HOME = {
   admin: '/admin',
 };
 
-const DEMO_ACCOUNTS = [
-  { role: 'Admin', email: 'admin@doccare.com', password: 'Admin@123', icon: '👑', badge: 'Full Access' },
-  { role: 'Doctor', email: 'sarah.johnson@doccare.com', password: 'Doctor@123', icon: '🩺', badge: 'Cardiologist' },
-  { role: 'Patient', email: 'john.miller@example.com', password: 'Patient@123', icon: '🧑', badge: 'Patient User' },
-];
-
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -32,12 +26,6 @@ export default function Login() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setError('');
-  };
-
-  const handleDemoFill = (acc) => {
-    setForm({ email: acc.email, password: acc.password });
-    setError('');
-    toast.info(`Filled with ${acc.role} credentials! Click 'Sign In' to continue.`);
   };
 
   const handleSubmit = async (e) => {
@@ -72,28 +60,6 @@ export default function Login() {
           </div>
           <h1>Welcome back</h1>
           <p>Sign in to your account to continue.</p>
-        </div>
-
-        {/* ------------------- Quick Demo Login Fillers ------------------- */}
-        <div className="demo-fill-card">
-          <div className="demo-fill-title">
-            <span>⚡</span> One-Click Demo Accounts (Instant Fill):
-          </div>
-          <div className="demo-fill-buttons">
-            {DEMO_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.role}
-                type="button"
-                className="demo-pill-btn"
-                onClick={() => handleDemoFill(acc)}
-                title={`Autofill as ${acc.role}`}
-              >
-                <span className="demo-pill-icon">{acc.icon}</span>
-                <span className="demo-pill-name">{acc.role}</span>
-                <span className="demo-pill-badge">{acc.badge}</span>
-              </button>
-            ))}
-          </div>
         </div>
 
         {error && <Alert type="error" message={error} onClose={() => setError('')} />}
