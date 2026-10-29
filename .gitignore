@@ -1,0 +1,56 @@
+# ================= Dependencies =================
+node_modules/
+jspm_packages/
+
+# ================= Build output =================
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+
+# ================= Environment / secrets =================
+# Real .env files must never be committed - only .env.example is tracked
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ================= Logs =================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ================= Legacy / archive (local only) =================
+# Old Django backend + old CDN frontend, kept on disk but not published
+_legacy/
+
+# ================= Python leftovers (legacy) =================
+__pycache__/
+*.py[cod]
+
+# ================= Local databases =================
+*.db
+*.sqlite
+*.sqlite3
+
+# ================= Editor / OS =================
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ================= Misc =================
+.cache/
+coverage/
+*.local
