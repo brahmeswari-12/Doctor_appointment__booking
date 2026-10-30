@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 // Base URL comes from the environment, falling back to the local backend.
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const DEFAULT_PROD_API = 'https://doctor-appointment-booking-qup8.onrender.com/api';
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? DEFAULT_PROD_API : 'http://localhost:5000/api');
 
 // Shared axios instance used by every service module.
 const api = axios.create({

@@ -32,10 +32,15 @@ function corsOrigin(origin, callback) {
   ) {
     return callback(null, true);
   }
+  // Allow all Vercel and Netlify preview and production URLs
+  if (/\.vercel\.app$/.test(origin) || /\.netlify\.app$/.test(origin)) {
+    return callback(null, true);
+  }
   return callback(new Error('Not allowed by CORS'));
 }
 
 app.use(cors({ origin: corsOrigin, credentials: true }));
+app.options('*', cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
