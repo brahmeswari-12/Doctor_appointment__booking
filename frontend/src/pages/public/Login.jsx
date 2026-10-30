@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import { useToastContext } from '../../context/ToastContext.jsx';
 import Alert from '../../components/Alert.jsx';
-import Loader from '../../components/Loader.jsx';
 
 // Redirect target for each role after a successful login.
 const ROLE_HOME = {
@@ -14,6 +13,7 @@ const ROLE_HOME = {
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -45,7 +45,7 @@ export default function Login() {
       toast.success('Welcome back!');
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setSubmitting(false);
     }
@@ -55,8 +55,11 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
+          <div className="auth-logo-pill">
+            <span>🩺</span> MediCare Portal
+          </div>
           <h1>Welcome back</h1>
-          <p>Sign in to manage your appointments.</p>
+          <p>Sign in to your account to continue.</p>
         </div>
 
         {error && <Alert type="error" message={error} onClose={() => setError('')} />}
@@ -64,7 +67,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label className="form-label" htmlFor="login-email">
-              Email <span className="required">*</span>
+              Email Address <span className="required">*</span>
             </label>
             <input
               id="login-email"
@@ -75,6 +78,7 @@ export default function Login() {
               value={form.email}
               onChange={handleChange}
               placeholder="you@example.com"
+              disabled={submitting}
             />
           </div>
 
@@ -82,16 +86,28 @@ export default function Login() {
             <label className="form-label" htmlFor="login-password">
               Password <span className="required">*</span>
             </label>
-            <input
-              id="login-password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              className="form-control"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Your password"
-            />
+            <div className="password-input-wrap">
+              <input
+                id="login-password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                className="form-control"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Your password"
+                disabled={submitting}
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword((prev) => !prev)}
+                title={showPassword ? 'Hide password' : 'Show password'}
+                tabIndex="-1"
+              >
+                {showPassword ? '👁️' : '🔒'}
+              </button>
+            </div>
           </div>
 
           <div className="flex-between mb-4">
@@ -99,13 +115,13 @@ export default function Login() {
             <Link to="/forgot-password" className="btn-link">Forgot password?</Link>
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={submitting}>
-            {submitting ? <Loader size="sm" inline /> : 'Sign In'}
+          <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={submitting}>
+            {submitting ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
         <div className="auth-footer">
-          Don&apos;t have an account? <Link to="/register">Create one</Link>
+          Don&apos;t have an account? <Link to="/register">Create an account</Link>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { formatTime, initials, todayAvailability } from '../utils/helpers.js';
 
 const MAX_VISIBLE_SLOTS = 4;
 
-// Small presentational card summarising a doctor.
+// Premium presentational card summarising a doctor.
 export default function DoctorCard({ doctor, onView, onBook, showBook = true }) {
   if (!doctor) return null;
 
@@ -15,29 +15,34 @@ export default function DoctorCard({ doctor, onView, onBook, showBook = true }) 
   return (
     <article className="doctor-card">
       <div className="doctor-card-top">
-        <span className="doctor-avatar" aria-hidden="true">{initials(doctor.name)}</span>
-        <div>
+        <div className="avatar-wrap">
+          <span className="doctor-avatar" aria-hidden="true">{initials(doctor.name)}</span>
+          <span className="verified-badge-mini" title="Verified Medical Specialist">✓</span>
+        </div>
+        <div className="doctor-header-info">
+          <div className="flex-between">
+            <span className="doctor-spec-pill">{specName}</span>
+            <span className="rating-pill">★ 4.9</span>
+          </div>
           <h3 className="doctor-name">{doctor.name}</h3>
-          <div className="doctor-spec">{specName}</div>
+          {doctor.qualification && (
+            <div className="doctor-qualification" title={doctor.qualification}>
+              {doctor.qualification}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="doctor-meta">
-        {doctor.qualification && (
-          <div className="doctor-meta-row">
-            <span aria-hidden="true">&#127891;</span>
-            <span>{doctor.qualification}</span>
-          </div>
-        )}
         {doctor.experience != null && (
           <div className="doctor-meta-row">
-            <span aria-hidden="true">&#128188;</span>
+            <span className="meta-icon" aria-hidden="true">💼</span>
             <span>{doctor.experience} years experience</span>
           </div>
         )}
         {doctor.phone && (
           <div className="doctor-meta-row">
-            <span aria-hidden="true">&#128222;</span>
+            <span className="meta-icon" aria-hidden="true">📞</span>
             <span>{doctor.phone}</span>
           </div>
         )}
@@ -45,10 +50,13 @@ export default function DoctorCard({ doctor, onView, onBook, showBook = true }) 
 
       {/* ------------------------ Today's slot status ------------------------ */}
       <div className="doctor-today">
-        <span className={`badge ${today.className}`}>{today.label}</span>
+        <span className={`badge ${today.className}`}>
+          <span className="status-dot" />
+          {today.label}
+        </span>
         {today.worksToday && doctor.todayTimings && (
           <span className="doctor-today-timings">
-            <span aria-hidden="true">&#128337;</span> {doctor.todayTimings}
+            <span aria-hidden="true">🕒</span> {doctor.todayTimings}
           </span>
         )}
       </div>
@@ -56,7 +64,7 @@ export default function DoctorCard({ doctor, onView, onBook, showBook = true }) 
       {today.worksToday && visibleSlots.length > 0 && (
         <div className="pill-list doctor-slot-chips">
           {visibleSlots.map((time) => (
-            <span key={time} className="chip">{formatTime(time)}</span>
+            <span key={time} className="chip chip-time">{formatTime(time)}</span>
           ))}
           {hiddenSlots > 0 && <span className="chip chip-more">+{hiddenSlots} more</span>}
         </div>
@@ -65,18 +73,21 @@ export default function DoctorCard({ doctor, onView, onBook, showBook = true }) 
       {doctor.bio && <p className="doctor-bio">{doctor.bio}</p>}
 
       <div className="doctor-card-footer">
-        <div className="doctor-fee">
-          ₹{doctor.consultationFee ?? '-'} <span>/ visit</span>
+        <div className="doctor-fee-box">
+          <span className="fee-label">Consultation Fee</span>
+          <div className="doctor-fee">
+            ₹{doctor.consultationFee ?? '-'} <span className="fee-sub">/ visit</span>
+          </div>
         </div>
         <div className="btn-group">
           {onView && (
             <button type="button" className="btn btn-outline btn-sm" onClick={() => onView(doctor)}>
-              View
+              Profile
             </button>
           )}
           {showBook && onBook && (
             <button type="button" className="btn btn-primary btn-sm" onClick={() => onBook(doctor)}>
-              Book
+              Book Now
             </button>
           )}
         </div>

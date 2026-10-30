@@ -2,6 +2,7 @@
  * Creates the database and all tables by running database/schema.sql,
  * then applies small additive migrations so an existing database is upgraded
  * in place instead of having to be dropped.
+ * Supports cloud MySQL databases with DB_SSL=true and DATABASE_URL.
  * Usage: npm run db:init
  */
 require('dotenv').config();
@@ -67,13 +68,27 @@ async function main() {
   const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
   const sql = fs.readFileSync(schemaPath, 'utf8');
 
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: Number(process.env.DB_PORT || 3306),
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    multipleStatements: true,
-  });
+  const sslConfig =
+    process.env.DB_SSL === 'true'
+      ? { rejectUnauthorized: false }
+      : undefined;
+
+  const connConfig = process.env.DATABASE_URL
+    ? {
+        uri: process.env.DATABASE_URL,
+        multipleStatements: true,
+        ssl: sslConfig,
+      }
+    : {
+        host: process.env.DB_HOST || '127.0.0.1',
+        port: Number(process.env.DB_PORT || 3306),
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        multipleStatements: true,
+        ssl: sslConfig,
+      };
+
+  const connection = await mysql.createConnection(connConfig);
 
   await connection.query(sql);
 

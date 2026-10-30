@@ -17,6 +17,7 @@
     "db:down": "docker compose down",
     "db:init": "npm --prefix backend run db:init",
     "db:seed": "npm --prefix backend run db:seed",
+    "db:clean": "npm --prefix backend run db:clean",
     "backend": "npm --prefix backend run dev",
     "frontend": "npm --prefix frontend run dev"
   }
