@@ -39,6 +39,17 @@ app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Welcome / root route so hitting the root URL shows a friendly status
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'MediCare Doctor Appointment Booking API is running successfully!',
+    health: '/api/health',
+    status: 'online',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Simple liveness probe so you can confirm the API is up without a token.
 app.get('/api/health', (req, res) => {
   res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() } });
